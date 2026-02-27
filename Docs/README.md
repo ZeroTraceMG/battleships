@@ -5,15 +5,25 @@
 | Bestand | Inhoud |
 |---------|--------|
 | `BUILDPLAN.md` | Volledig build plan: game design, architectuur, milestones, SO-schemas, networking specs, 7-dagenplan |
+| `TECHNICAL_PLAN.md` | Technisch plan: klasse-relaties, data-architectuur, scene-structuur, netwerk-specs, performance-budget, testplan, build-pipeline, risico-register |
+| `PROMPT_PLAN.md` | Kant-en-klare Claude Code prompts per feature — kopieer en plak om elke feature te bouwen |
 
 ## Snelle navigatie
 
-- **Game design + concept** → BUILDPLAN.md § A
-- **Technische architectuur + mappenstructuur** → BUILDPLAN.md § B
-- **Milestone plan (5 fasen, ~26 weken)** → BUILDPLAN.md § C
-- **ScriptableObject schemas (alle 7 typen)** → BUILDPLAN.md § D
-- **Networking specs (Mirror/KCP, authority model)** → BUILDPLAN.md § E
-- **Eerste 7 dagen exacte checklist** → BUILDPLAN.md § F
+| Vraag | Ga naar |
+|-------|---------|
+| Wat is het spel? Wat is de core loop? | BUILDPLAN.md § A |
+| Welke technologie gebruiken we? | BUILDPLAN.md § B / TECHNICAL_PLAN.md § 1-2 |
+| Wanneer is wat klaar? | BUILDPLAN.md § C |
+| Hoe zijn de ScriptableObjects opgebouwd? | BUILDPLAN.md § D / TECHNICAL_PLAN.md § 3 |
+| Hoe werkt het netwerk (Mirror/KCP)? | BUILDPLAN.md § E / TECHNICAL_PLAN.md § 5 |
+| Wat doe ik vandaag? (7-dagenplan) | BUILDPLAN.md § F |
+| Hoe bouw ik feature X stap voor stap? | **PROMPT_PLAN.md** — kopieer de juiste prompt |
+| Scene- en prefab-structuur? | TECHNICAL_PLAN.md § 4 |
+| Performance-doelstellingen? | TECHNICAL_PLAN.md § 6 |
+| Testplan? | TECHNICAL_PLAN.md § 7 |
+| Git-strategie en build-targets? | TECHNICAL_PLAN.md § 8 |
+| Risico's en maatregelen? | TECHNICAL_PLAN.md § 10 |
 
 ## Waar staat de code?
 
