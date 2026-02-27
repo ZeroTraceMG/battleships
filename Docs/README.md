@@ -7,6 +7,14 @@
 | `BUILDPLAN.md` | Volledig build plan: game design, architectuur, milestones, SO-schemas, networking specs, 7-dagenplan |
 | `TECHNICAL_PLAN.md` | Technisch plan: klasse-relaties, data-architectuur, scene-structuur, netwerk-specs, performance-budget, testplan, build-pipeline, risico-register |
 | `PROMPT_PLAN.md` | Kant-en-klare Claude Code prompts per feature — kopieer en plak om elke feature te bouwen |
+| `ART_DIRECTION.md` | Dieselpunk/sci-fi visual identity bible — color palette (exact hex), ship silhouettes, UI style, VFX palette, audio mood |
+| `ASSET_PIPELINE.md` | End-to-end asset workflow: Blender → texturing → Unity. Naming conventions, texture specs, import settings, LOD rules |
+| `TOOLS_PLAN.md` | All tools: Unity packages, AI tools, 3D/audio/CI tools — versions, license costs, setup notes |
+| `IMPLEMENTATION_CHECKLIST.md` | Master Phase 1–5 step-by-step checklist — every task with tool, output, and acceptance criterion |
+
+Extra document toegevoegd: `BLENDER_INSTALL_EN_PROMPTS.md` (installatie + prompt pack).
+Extra document toegevoegd: `STAPPENPLAN_BEGIN_TOT_EIND.md` (globale route van start tot release).
+Extra document toegevoegd: `SPRINT_1_DAGPLAN_EN_PROMPTS.md` (dag-tot-dag sprintplan met prompts).
 
 ## Snelle navigatie
 
@@ -24,6 +32,10 @@
 | Testplan? | TECHNICAL_PLAN.md § 7 |
 | Git-strategie en build-targets? | TECHNICAL_PLAN.md § 8 |
 | Risico's en maatregelen? | TECHNICAL_PLAN.md § 10 |
+| Kleurenpalet (exact hex), visuele stijl? | **ART_DIRECTION.md** |
+| Hoe exporteer ik assets vanuit Blender? | **ASSET_PIPELINE.md** § 4 |
+| Welke tools gebruik ik en wat kost het? | **TOOLS_PLAN.md** |
+| Wat is de volgende stap in het project? | **IMPLEMENTATION_CHECKLIST.md** |
 
 ## Waar staat de code?
 
