@@ -78,3 +78,17 @@ crashlytics-build.properties
 
 # Local assistant workspace
 .claude/
+
+# Nested Unity project (Iron Tide) generated files
+Iron Tide/[Ll]ibrary/
+Iron Tide/[Tt]emp/
+Iron Tide/[Oo]bj/
+Iron Tide/[Bb]uild/
+Iron Tide/[Bb]uilds/
+Iron Tide/[Ll]ogs/
+Iron Tide/[Uu]ser[Ss]ettings/
+Iron Tide/.vs/
+Iron Tide/.vscode/
+Iron Tide/*.csproj
+Iron Tide/*.sln
+Iron Tide/*.slnx

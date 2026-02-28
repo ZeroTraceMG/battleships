@@ -48,13 +48,69 @@
 |------|---------|---------------|----------------|
 | GitHub Copilot | Current | $10/mo Individual | Inline code autocomplete in VS Code / Rider |
 | Claude Code | claude-sonnet-4-6 | Anthropic subscription | Architecture design, debugging, SO data gen, balance tuning |
+| **CoPlay (unity-mcp)** | **Latest** | **Free / MIT** | **MCP bridge: Claude stuurt Unity Editor direct aan** |
 | Midjourney | v6 | $10–30/mo | Concept art: ship silhouettes, mood boards, UI mockups |
 | Stable Diffusion | SDXL 1.0 | Free (local) | Texture generation: tiling metal, rust, bio-organic patterns |
 | ComfyUI | Latest | Free | Stable Diffusion workflow UI (runs locally) |
 | Adobe Firefly | Current | Adobe CC subscription | Background removal, texture variation, upscaling |
 | Suno.ai | v4 | Free tier / $10/mo | AI music prototyping before composer hand-off |
 
-### 2.1 AI Usage Policy
+### 2.1 CoPlay MCP — Unity Editor Bridge
+
+CoPlay is een **Model Context Protocol server** die een live verbinding maakt tussen
+Claude Code en de Unity Editor. Claude kan hiermee zonder handmatige tussenstappen:
+
+- GameObjects aanmaken en configureren in de scene
+- Components toevoegen en properties instellen
+- ScriptableObject assets aanmaken en vullen
+- Prefabs samenstellen en opslaan
+- Scenes bouwen en opslaan
+- Code schrijven én meteen in Unity laden
+
+**Installatie (eenmalig — zie ROADMAP.md Stap 0):**
+
+```
+Stap A: Unity package installeren
+  Package Manager → + → Add package from git URL:
+  https://github.com/CoderGamester/mcp-unity.git
+
+Stap B: MCP server configureren in Claude Code
+  Bestand: %APPDATA%\Claude\claude_desktop_config.json
+  OF:      C:\Users\[naam]\.claude\settings.json
+
+  Voeg toe:
+  {
+    "mcpServers": {
+      "unity": {
+        "command": "node",
+        "args": ["C:/game/battleships/Library/PackageCache/mcp-unity/Server~/build/index.js"],
+        "env": {
+          "UNITY_PORT": "8090"
+        }
+      }
+    }
+  }
+
+Stap C: Unity verbinden
+  In Unity: Window → MCP Unity → Start Server (port 8090)
+  In Claude Code: verifieer met /mcp → unity tools zichtbaar
+```
+
+**Wat Claude daarna kan in Unity:**
+
+| MCP Tool | Wat het doet |
+|----------|-------------|
+| `create_gameobject` | Nieuw GO aanmaken in scene/hiërarchie |
+| `add_component` | Component toevoegen aan een GO |
+| `set_component_property` | Property-waarde instellen (float, string, ref) |
+| `create_script` | C# script schrijven + opslaan in Assets/ |
+| `create_asset` | ScriptableObject asset aanmaken + vullen |
+| `save_scene` | Huidige scene opslaan |
+| `run_tests` | Unity Test Runner aansturen |
+| `get_hierarchy` | Scene-hiërarchie uitlezen |
+| `find_gameobject` | GO opzoeken op naam/tag |
+
+### 2.2 AI Usage Policy
 
 - AI-generated art is **reference and prototype only** — no AI art ships in final builds.
 - AI-generated code is **reviewed by a human** before commit — never commit Copilot output blind.

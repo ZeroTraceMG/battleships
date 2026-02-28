@@ -11,22 +11,37 @@ Globaal plan. Onderweg passen we dingen aan.
 
 ## HOE DIT WERKT
 
+**Zonder CoPlay MCP (oude manier):**
 ```
-Jij opent Unity / Blender / terminal
+Claude schrijft script
     ↓
-Jij leest de stap
+Jij gaat handmatig naar Unity
     ↓
-Jij kopieert de PROMPT en plakt die hier in Claude Code
+Jij maakt GameObject, voegt component toe, stelt waarden in
     ↓
-Claude Code bouwt / schrijft / configureert
+Jij test
+```
+
+**Met CoPlay MCP (onze manier):**
+```
+Jij plakt de PROMPT hier in Claude Code
     ↓
-Jij test in Unity ("werkt het?")
+Claude schrijft scripts én stuurt Unity direct aan:
+  - Maakt scenes en GameObjects aan
+  - Voegt components toe met de juiste waarden
+  - Maakt ScriptableObject assets aan en vult ze
+  - Bouwt prefabs samen
+  - Slaat alles op
+    ↓
+Jij drukt Play in Unity en test
     ↓
 Volgende stap
 ```
 
-Als iets niet werkt: plak de foutmelding hier in dit gesprek.
-We lossen het op en gaan verder.
+**Jij hoeft alleen nog:**
+- Unity open te hebben staan (op de achtergrond)
+- Op Play te drukken om te testen
+- Foutmeldingen hier te plakken als er iets misgaat
 
 ---
 
@@ -35,98 +50,132 @@ We lossen het op en gaan verder.
 
 ---
 
-## STAP 1 — Unity project opzetten
-**Tijd:** 2 uur | **Eenmalig**
+## STAP 0 — CoPlay MCP installeren
+**Tijd:** 30 minuten | **Eenmalig — doe dit vóór alles**
+
+CoPlay maakt een live brug tussen Claude Code en de Unity Editor.
+Zonder dit moet je alles handmatig in Unity configureren.
+Met dit doet Claude het voor je.
 
 ### Wat je handmatig doet:
-1. Open **Unity Hub**
-2. Klik **New Project**
-3. Kies template: **Universal 3D (URP)**
-4. Naam: `IronTide`
-5. Locatie: `C:\game\battleships`
-6. Klik **Create Project**
-7. Wacht tot Unity opent (eerste keer ~5 min)
 
-### Daarna plak je dit in Claude Code:
+**A) Unity project aanmaken (als nog niet gedaan):**
+1. Open Unity Hub → New Project
+2. Template: **Universal 3D (URP)**
+3. Naam: `IronTide`, locatie: `C:\game\battleships`
+4. Create Project, wacht tot het opent
+
+**B) CoPlay package installeren in Unity:**
+1. Window → Package Manager
+2. Klik `+` → **Add package from git URL**
+3. Plak: `https://github.com/CoderGamester/mcp-unity.git`
+4. Klik **Add** — wacht op installatie
+
+**C) MCP server starten in Unity:**
+1. Window → **MCP Unity** → **Server Window**
+2. Klik **Start Server** (standaard poort 8090)
+3. Groen lampje = server draait
+
+**D) Claude Code verbinden met Unity:**
+
+Maak of bewerk dit bestand:
+`C:\Users\[jouw naam]\.claude\settings.json`
+
+Voeg toe (of merge met bestaande inhoud):
+```json
+{
+  "mcpServers": {
+    "unity": {
+      "command": "node",
+      "args": ["C:\\game\\battleships\\Library\\PackageCache\\mcp-unity\\Server~\\build\\index.js"],
+      "env": {
+        "UNITY_PORT": "8090"
+      }
+    }
+  }
+}
+```
+
+**E) Verbinding verifiëren:**
+- Herstart Claude Code
+- Typ `/mcp` in dit gesprek
+- Je ziet `unity` in de lijst met beschikbare MCP servers
+
+### Dan plak je dit als verificatie-prompt:
 
 ```
-PROMPT 1 — Project basisstructuur aanmaken
+PROMPT 0 — CoPlay verbindingstest
 
-Het Unity 6 project staat in C:\game\battleships.
-URP is al geïnstalleerd via de Universal 3D template.
+Controleer of de Unity MCP verbinding werkt.
 
-Doe het volgende:
+Doe het volgende via MCP:
+1. Lees de huidige scene-hiërarchie uit
+2. Maak een leeg GameObject aan genaamd "MCP_Test"
+3. Verwijder het weer
+4. Rapporteer: welke Unity versie, welke packages al geïnstalleerd,
+   en of de verbinding stabiel is
 
-1. Installeer deze packages via Package Manager (Window → Package Manager):
-   - Mirror Networking: git URL https://github.com/MirrorNetworking/Mirror.git#latest
-   - Input System: com.unity.inputsystem
-   - Cinemachine: com.unity.cinemachine
-   - TextMeshPro: al aanwezig, zo niet installeer het
-   - ProBuilder: com.unity.probuilder
-   - VFX Graph: com.unity.visualeffectgraph
+Als de verbinding niet werkt, geef dan de exacte foutmelding.
+```
 
-2. Maak deze mappenstructuur aan in Assets/:
-   _Game/
-     Scripts/
-       Core/
-       Ship/
-       Weapons/
-       Abilities/
-       Economy/
-       AI/
-       Networking/
-       UI/
-       Objectives/
-       Match/
-       Camera/
-       Data/
-       Utils/
-     Tests/
-       EditMode/
-       PlayMode/
-     Data/
-       Ships/
-       Weapons/
-       Upgrades/
-     Prefabs/
-       Ships/
-       Projectiles/
-       Environment/
-     Art/
-       Ships/
-       Environment/
-       UI/
-         Fonts/
-       VFX/
-     Audio/
-       SFX/
-       Music/
-     Scenes/
+**Check:** Claude noemt de Unity versie en pakketlijst. "MCP_Test" verschijnt even in de hiërarchie en verdwijnt. Geen errors.
 
-3. Maak twee scenes aan in Assets/_Game/Scenes/:
-   - Bootstrap.unity
-   - DevSandbox.unity
+---
 
-4. Voeg beide toe aan Build Settings (Bootstrap index 0, DevSandbox index 1)
+## STAP 1 — Unity project opzetten
+**Tijd:** 30 minuten | **Eenmalig**
 
-5. Maak aan in Project Settings → Tags & Layers:
+### Wat je handmatig doet:
+1. Zorg dat **Stap 0** gedaan is (CoPlay draait, verbinding werkt)
+2. Unity heeft het project al open via Stap 0
+
+### Plak dit in Claude Code:
+
+```
+PROMPT 1 — Project basisstructuur aanmaken via MCP
+
+Het Unity 6 project staat in C:\game\battleships en is verbonden via MCP.
+
+Gebruik MCP om het volgende te doen:
+
+1. Maak de volledige mappenstructuur aan in Assets/ via MCP of bestandssysteem:
+   _Game/Scripts/{Core,Ship,Weapons,Abilities,Economy,AI,Networking,UI,Objectives,Match,Camera,Data,Utils}/
+   _Game/Tests/{EditMode,PlayMode}/
+   _Game/Data/{Ships,Weapons,Upgrades,Cosmetics}/
+   _Game/Prefabs/{Ships,Projectiles,Environment}/
+   _Game/Art/{Ships,Environment,UI/Fonts,VFX}/
+   _Game/Audio/{SFX,Music}/
+   _Game/Scenes/
+
+2. Voeg via MCP de juiste packages toe aan Packages/manifest.json:
+   - Mirror: https://github.com/MirrorNetworking/Mirror.git#latest
+   - com.unity.inputsystem
+   - com.unity.cinemachine
+   - com.unity.probuilder
+   - com.unity.visualeffectgraph
+
+3. Maak via MCP twee lege scenes aan:
+   - Assets/_Game/Scenes/Bootstrap.unity
+   - Assets/_Game/Scenes/DevSandbox.unity
+
+4. Schrijf naar ProjectSettings/EditorBuildSettings.asset
+   zodat Bootstrap index 0 is, DevSandbox index 1
+
+5. Schrijf naar ProjectSettings/TagManager.asset:
    Layer 6: Ships
    Layer 7: Projectiles
    Layer 8: MapObjects
    Layer 9: Water
    Layer 10: HarborZone
 
-6. Maak twee URP Pipeline Assets aan:
-   - Assets/_Game/Art/URP_PC.asset
-     (schaduwen AAN, MSAA 4x)
-   - Assets/_Game/Art/URP_Mobile.asset
-     (schaduwen UIT, MSAA UIT)
-   Koppel in Project Settings → Quality
+6. Maak twee URP Pipeline Asset bestanden aan:
+   Assets/_Game/Art/URP_PC.asset     (shadows: true, msaa: 4)
+   Assets/_Game/Art/URP_Mobile.asset (shadows: false, msaa: 1)
 
-Rapporteer welke stappen gelukt zijn en welke niet.
+Bevestig elke stap en rapporteer wat gelukt is.
 ```
 
-**Check:** Unity opent zonder errors. Alle mappen zichtbaar. Beide scenes in Build Settings.
+**Check:** Alle mappen in Project window. Bootstrap = index 0 in Build Settings. Layers correct in Inspector dropdowns.
 
 ---
 
@@ -248,9 +297,11 @@ Weapons/WD_Torpedo_Destroyer.asset:
 ```
 PROMPT 4 — Ship movement
 
-Schrijf in Assets\_Game\Scripts\Ship\:
+Gebruik MCP + bestandssysteem. Doe het volgende:
 
-1. ShipStats.cs
+1. Schrijf in Assets\_Game\Scripts\Ship\:
+
+ShipStats.cs
    - Leest waarden uit ShipClassData SO
    - Properties: MaxHP, CurrentHP, Armor, Speed, TurnRate, Team
    - Methode: TakeDamage(float raw) → berekent armor, past HP aan, gooit OnDamaged event
@@ -267,23 +318,23 @@ Schrijf in Assets\_Game\Scripts\Ship\:
    - S = achteruit (halve snelheid)
    - Smoothe acceleratie via baseAcceleration
 
-3. Maak prefab aan: Assets\_Game\Prefabs\Ships\PFB_Ship_Frigate.prefab
-   Structuur:
-   Root "PFB_Ship_Frigate"
-   ├── Rigidbody (isKinematic=true, constraints: FreezeY + FreezeRotX + FreezeRotZ)
-   ├── BoxCollider (size 1x0.5x3, layer=Ships=6)
-   ├── ShipStats (koppel SC_Frigate.asset)
-   ├── ShipController
-   └── MuzzlePoint (leeg child Transform, z+2 van root)
+3. Gebruik MCP om het prefab te bouwen:
+   - create_gameobject naam="PFB_Ship_Frigate"
+   - add_component: Rigidbody (isKinematic=true, FreezeY + FreezeRotXZ)
+   - add_component: BoxCollider (size 1,0.5,3) layer=6
+   - add_component: ShipStats → koppel SC_Frigate.asset
+   - add_component: ShipController
+   - create_gameobject naam="MuzzlePoint" als child, positie (0,0,2)
+   - Sla op als prefab in Assets/_Game/Prefabs/Ships/PFB_Ship_Frigate.prefab
 
-4. Maak een simpele PlayerInputHandler.cs
+4. Schrijf PlayerInputHandler.cs, voeg via MCP toe aan scene
    - Leest WASD van keyboard
    - Stuurt naar ShipController.SetMovementInput()
 
-Voeg het prefab toe aan DevSandbox.unity en test.
+5. Voeg via MCP het schip toe aan DevSandbox.unity op positie (0,0,0)
 ```
 
-**Check:** Schip beweegt soepel met WASD. Roteert. Stopt bij loslaten. Geen errors.
+**Check:** Druk Play — schip beweegt soepel met WASD. Roteert. Stopt bij loslaten. Geen errors.
 
 ---
 
@@ -311,14 +362,19 @@ Schrijf in Assets\_Game\Scripts\Weapons\:
    - Cooldown telt af in Update()
    - Spacebar of rechter muisknop triggert TryFire()
 
-Maak aan:
-Assets\_Game\Prefabs\Projectiles\PFB_Projectile_CannonShell.prefab
-  - Sphere (schaal 0.3), geen renderer schaduw, layer=7
-  - CannonShell component erop
+Gebruik MCP om het projectiel-prefab te bouwen:
+  - create_gameobject naam="PFB_Projectile_CannonShell"
+  - add_component: SphereCollider (radius=0.15, isTrigger=true) layer=7
+  - add_component: MeshFilter (sphere mesh)
+  - add_component: MeshRenderer (geen schaduwen)
+  - add_component: CannonShell
+  - Sla op als prefab in Assets/_Game/Prefabs/Projectiles/
 
-Voeg WeaponMount toe aan PFB_Ship_Frigate.prefab
-Koppel WD_Cannon_Frigate.asset aan WeaponMount
-Koppel PFB_Projectile_CannonShell aan WeaponMount.projectilePrefab
+Gebruik MCP om WeaponMount toe te voegen aan het schip-prefab:
+  - find_gameobject "PFB_Ship_Frigate"
+  - add_component: WeaponMount
+  - set_property: weaponData = WD_Cannon_Frigate.asset
+  - set_property: projectilePrefab = PFB_Projectile_CannonShell.prefab
 ```
 
 **Check:** Spatiebalk = schip schiet. Kogel vliegt vooruit. Raakt dummy object = damage.
@@ -349,10 +405,14 @@ Shader logica:
 3. Fresnel aan randen (foam effect)
 4. Geen transparantie (opaque) — performance op mobiel
 
-Maak een material aan: Assets\_Game\Art\Environment\Water\M_Water.mat
-Maak een plane GameObject aan in DevSandbox.unity (schaal 100x1x100, y=0)
-Wijs M_Water.mat toe
-Zet layer op Water (9)
+Gebruik MCP om het waterplane in de scene te plaatsen:
+  - create_asset: Material M_Water.mat met shader Custom/Water
+  - create_gameobject naam="WaterPlane" in DevSandbox.unity
+  - add_component: MeshFilter (Plane mesh)
+  - add_component: MeshRenderer → material M_Water.mat
+  - set_property: scale = (100, 1, 100), position = (0, 0, 0)
+  - set layer = 9 (Water)
+  - save_scene DevSandbox.unity
 ```
 
 **Check:** Water is zichtbaar. Beweegt subtiel. Schip "vaart" eroverheen. Geen z-fighting.
@@ -1107,6 +1167,7 @@ Rapporteer per platform: OK, MIST, of BLOCKER
 
 ```
 FASE 1 — PROTOTYPE (Week 1-3)
+  Stap 0:  CoPlay MCP installeren       ← EERST DOEN
   Stap 1:  Unity project opzetten
   Stap 2:  Kern scripts (ServiceLocator, EventBus)
   Stap 3:  ScriptableObjects (schepen, wapens, upgrades)
@@ -1153,12 +1214,15 @@ FASE 5 — RANKED BETA (Week 21-26)
 ## HOE DIT TE GEBRUIKEN
 
 **Elke dag:**
-1. Kijk welke stap je op zit
-2. Kopieer de PROMPT van die stap
-3. Plak het hier in dit gesprek
-4. Test het resultaat in Unity
-5. Als het werkt → volgende stap
-6. Als er een fout is → plak de foutmelding hier
+1. Zorg dat Unity open staat met het project
+2. Zorg dat het MCP Unity Server venster op **groen** staat (Window → MCP Unity)
+3. Kijk welke stap je op zit in dit document
+4. Kopieer de PROMPT van die stap
+5. Plak het hier in dit gesprek
+6. Kijk in Unity hoe de scene en hierarchy zich vult
+7. Druk op **Play** en test
+8. Als het werkt → volgende stap
+9. Als er een fout is → plak de foutmelding hier
 
 **Dingen aanpassen onderweg:**
 - Mechanic werkt niet? Zeg het hier — we passen de prompt aan
